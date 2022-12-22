@@ -20,6 +20,7 @@ pipeline {
                 }
             }
         }
+        
 
         // Authorize the Snyk CLI
         stage('Authorize Snyk CLI') {
