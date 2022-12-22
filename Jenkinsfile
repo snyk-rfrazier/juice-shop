@@ -42,7 +42,7 @@ pipeline {
                 stage('Snyk Open Source') {
                     steps {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                            sh 'snyk test --fail-on=all|upgradable|patchable --sarif-file-output=results-open-source.sarif'
+                            sh 'snyk test --fail-on=all --sarif-file-output=results-open-source.sarif'
                         }
                         recordIssues tool: sarif(name: 'Snyk Open Source', id: 'snyk-open-source', pattern: 'results-open-source.sarif')
                     }
