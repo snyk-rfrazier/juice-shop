@@ -16,7 +16,7 @@ pipeline {
         stage('Install snyk CLI') {
             steps {
                 script {
-                    sh 'npm install -g snyk'
+                    sh 'npm install -g snyk snyk-to-html snyk-delta'
                 }
             }
         }
@@ -75,6 +75,13 @@ pipeline {
                             sh 'snyk iac test --report --sarif-file-output=results-iac.sarif'
                         }
                         recordIssues tool: sarif(name: 'Snyk IaC', id: 'snyk-iac', pattern: 'results-iac.sarif')
+                    }
+                }
+                stage('Snyk Delta') {
+                    steps {
+                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                            sh 'snyk test --json --print-deps | snyk-delta'
+                        }
                     }
                 }
             }
