@@ -77,7 +77,7 @@ pipeline {
                 stage('Snyk Delta') {
                     steps {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                            sh 'snyk test --json --print-deps | DEBUG=* snyk-delta --baselineProject 63ee44a8-40e0-4566-848a-8fb2f362530f'
+                            sh 'snyk test --json --print-deps | snyk-delta --baselineOrg f84edda3-a197-4214-90b7-0c3f6823925f --baselineProject 63ee44a8-40e0-4566-848a-8fb2f362530f'
                         }
                     }
                 }
