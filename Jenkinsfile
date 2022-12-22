@@ -33,7 +33,7 @@ pipeline {
         stage('Build App') {
             steps {
                 // Replace this with your build instructions, as necessary.
-                sh 'echo no-op'
+                sh 'docker build -t juice-shop .'
             }
         }
 
@@ -62,6 +62,9 @@ pipeline {
                     steps {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                             sh 'snyk container test ../juice-shop --file=Dockerfile --sarif-file-output=results-container.sarif'
+                        }
+                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                            sh 'snyk container monitor --file=Dockerfile juice-shop:latest'
                         }
                         recordIssues tool: sarif(name: 'Snyk Container', id: 'snyk-container', pattern: 'results-container.sarif')
                     }
