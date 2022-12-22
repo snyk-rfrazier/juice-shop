@@ -42,7 +42,7 @@ pipeline {
                 stage('Snyk Open Source') {
                     steps {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                            sh 'snyk test --sarif-file-output=results-open-source.sarif'
+                            sh 'snyk test --fail-on=all|upgradable|patchable --sarif-file-output=results-open-source.sarif'
                         }
                         recordIssues tool: sarif(name: 'Snyk Open Source', id: 'snyk-open-source', pattern: 'results-open-source.sarif')
                     }
@@ -51,6 +51,7 @@ pipeline {
                     steps {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                             sh 'snyk code test --sarif-file-output=results-code.sarif'
+                            sh 'snyk-to-html -i results-code.sarif -o results-code.html'
                         }
                         recordIssues  tool: sarif(name: 'Snyk Code', id: 'snyk-code', pattern: 'results-code.sarif')
                     }
@@ -58,7 +59,7 @@ pipeline {
                 stage('Snyk Container') {
                     steps {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                            sh 'snyk container test sebsnyk/juice-shop --file=Dockerfile --sarif-file-output=results-container.sarif'
+                            sh 'snyk container test ../juice-shop --file=Dockerfile --sarif-file-output=results-container.sarif'
                         }
                         recordIssues tool: sarif(name: 'Snyk Container', id: 'snyk-container', pattern: 'results-container.sarif')
                     }
