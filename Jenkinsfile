@@ -51,6 +51,8 @@ pipeline {
                     steps {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                             sh 'snyk code test --sarif-file-output=results-code.sarif'
+                        }
+                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                             sh 'snyk-to-html -i results-code.sarif -o results-code.html'
                         }
                         recordIssues  tool: sarif(name: 'Snyk Code', id: 'snyk-code', pattern: 'results-code.sarif')
@@ -67,7 +69,7 @@ pipeline {
                 stage('Snyk IaC') {
                     steps {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                            sh 'snyk iac test --sarif-file-output=results-iac.sarif'
+                            sh 'snyk iac test --report --sarif-file-output=results-iac.sarif'
                         }
                         recordIssues tool: sarif(name: 'Snyk IaC', id: 'snyk-iac', pattern: 'results-iac.sarif')
                     }
