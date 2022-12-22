@@ -32,7 +32,6 @@ pipeline {
 
         stage('Build App') {
             steps {
-                // Replace this with your build instructions, as necessary.
                 sh 'docker build -t juice-shop .'
             }
         }
@@ -52,9 +51,7 @@ pipeline {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                             sh 'snyk code test --sarif-file-output=results-code.sarif'
                         }
-                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                            sh 'snyk-to-html -i results-code.sarif -o results-code.html'
-                        }
+                        sh 'snyk-to-html -i results-code.sarif -o results-code.html'
                         recordIssues  tool: sarif(name: 'Snyk Code', id: 'snyk-code', pattern: 'results-code.sarif')
                     }
                 }
@@ -80,7 +77,7 @@ pipeline {
                 stage('Snyk Delta') {
                     steps {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                            sh 'snyk test --json --print-deps | snyk-delta'
+                            sh 'snyk test --json --print-deps | snyk-delta --baselineProject 63ee44a8-40e0-4566-848a-8fb2f362530f'
                         }
                     }
                 }
